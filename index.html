@@ -1,0 +1,286 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Roket Video Maker - AI Video Creation Studio</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="index.css" />
+  <script type="importmap">
+{
+  "imports": {
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.16.0"
+  }
+}
+</script>
+</head>
+  <body>
+
+    <!-- API KEY SELECTION MODAL REMOVED -->
+
+    <header>
+      <div class="logo">Roket Video Maker <span class="tagline">– AI Video Creation Studio</span></div>
+      <div class="header-actions">
+        <!-- API Key buttons removed -->
+      </div>
+    </header>
+    <main>
+      <!-- GENERATOR SECTION -->
+      <section id="generator-section">
+        <!-- POSE SELECTION MODAL -->
+        <div id="pose-modal" class="hidden">
+          <div class="pose-modal-content">
+            <div class="pose-modal-header">
+              <h3>Select up to 6 Poses</h3>
+              <p>Selected: <span id="selection-counter" class="font-bold">0</span>/6</p>
+            </div>
+            <div id="pose-list-container" class="pose-modal-body">
+              <!-- Pose checkboxes will be inserted here by JS -->
+            </div>
+            <div class="pose-modal-footer">
+              <button id="cancel-modal-btn" class="btn-secondary">Cancel</button>
+              <button id="generate-poses-btn" class="btn-primary" disabled>Generate Poses</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Universal Modal for Product Photography -->
+        <div id="universal-modal" class="modal-backdrop hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modal-title" class="modal-title-text"></h3>
+                    <button id="close-modal-btn" class="modal-close-btn">&times;</button>
+                </div>
+                <div id="modal-body">
+                    <!-- Content will be injected here by JS -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="generator-app"> <!-- 'hidden' class removed -->
+          <!-- SIDEBAR NAVIGATION -->
+          <nav id="sidebar-nav">
+            <div class="sidebar-header">
+              <div class="logo">Roket Video Maker</div>
+            </div>
+            <ul class="sidebar-menu">
+              <li><button class="sidebar-menu-button active" data-mode="image-studio">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                <span>Image Studio</span>
+              </button></li>
+              <li><button class="sidebar-menu-button" data-mode="image-storyboard">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="3" width="10" height="18" rx="2" ry="2"></rect><line x1="12" y1="5" x2="12" y2="5.01"></line><line x1="12" y1="19" x2="12" y2="19.01"></line></svg>
+                <span>Image Storyboard</span>
+              </button></li>
+              <li><button class="sidebar-menu-button" data-mode="video-storyboard">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="17" x2="22" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line></svg>
+                <span>Video Storyboard</span>
+              </button></li>
+            </ul>
+            <div class="sidebar-footer">
+                <p>© 2025 Roket Video Maker</p>
+            </div>
+          </nav>
+
+          <div class="main-content">
+            <!-- CONTROL PANEL -->
+            <aside class="control-panel">
+              <h2 id="control-panel-title">Image Studio</h2>
+
+              <!-- Image Studio Panel (now the main panel) -->
+              <div id="image-studio-panel">
+                  <!-- Combine Images Panel -->
+                  <div id="combine-images-panel">
+                      <div class="form-group">
+                          <label for="product-image-input">Product Image</label>
+                          <div class="image-upload-group">
+                              <div id="product-image-preview-container" class="image-upload-preview-container hidden">
+                                  <img id="product-image-preview" src="" alt="Product image preview">
+                                  <button id="remove-product-image-button" class="image-upload-remove-button" aria-label="Remove product image">&times;</button>
+                              </div>
+                              <label class="file-upload-label" for="product-image-input">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                  <span id="product-file-name">Upload Product Image</span>
+                              </label>
+                          </div>
+                          <input type="file" id="product-image-input" accept="image/*" class="sr-only">
+                      </div>
+                      <div id="single-model-upload-group">
+                           <div class="form-group">
+                              <label for="model-image-input">Model Image</label>
+                              <div class="image-upload-group">
+                                  <div id="model-image-preview-container" class="image-upload-preview-container hidden">
+                                      <img id="model-image-preview" src="" alt="Model image preview">
+                                      <button id="remove-model-image-button" class="image-upload-remove-button" aria-label="Remove model image">&times;</button>
+                                  </div>
+                                  <label class="file-upload-label" for="model-image-input">
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                      <span id="model-file-name">Upload Model Image</span>
+                                  </label>
+                              </div>
+                              <input type="file" id="model-image-input" accept="image/*" class="sr-only">
+                          </div>
+                      </div>
+                      <div id="combine-prompt-group" class="form-group">
+                        <label for="combine-prompt-input">Main Prompt</label>
+                        <textarea id="combine-prompt-input" rows="4" placeholder="e.g., A model holding the product in a studio setting.">Gunakan foto produk dan foto model yang tersedia untuk membuat gambar fotorealistis baru di mana model sedang memegang produk. Pastikan hasilnya berkualitas tinggi dan terlihat seperti pemotretan profesional. Pertahankan penampilan model dan detail produk.</textarea>
+                      </div>
+                       <!-- Storyboard Pose Selection -->
+                      <div id="storyboard-pose-group" class="form-group hidden">
+                          <label>Pilih Pose Storyboard (Pilih Beberapa)</label>
+                          <div id="storyboard-pose-selection" class="pose-selection-container">
+                              <div class="pose-item">
+                                  <input type="checkbox" id="storyboard-pose-1" name="storyboard-pose" value="1">
+                                  <label for="storyboard-pose-1">Pose 1: Kecewa di Ranjang</label>
+                              </div>
+                              <div class="pose-item">
+                                  <input type="checkbox" id="storyboard-pose-2" name="storyboard-pose" value="2">
+                                  <label for="storyboard-pose-2">Pose 2: Sedih di Depan Cermin</label>
+                              </div>
+                              <div class="pose-item">
+                                  <input type="checkbox" id="storyboard-pose-3" name="storyboard-pose" value="3">
+                                  <label for="storyboard-pose-3">Close-up Produk & Harapan</label>
+                              </div>
+                              <div class="pose-item">
+                                  <input type="checkbox" id="storyboard-pose-4" name="storyboard-pose" value="4">
+                                  <label for="storyboard-pose-4">Meneteskan Produk ke Tangan</label>
+                              </div>
+                              <div class="pose-item">
+                                  <input type="checkbox" id="storyboard-pose-5" name="storyboard-pose" value="5">
+                                  <label for="storyboard-pose-5">Membilas Wajah</label>
+                              </div>
+                              <div class="pose-item">
+                                  <input type="checkbox" id="storyboard-pose-6" name="storyboard-pose" value="6">
+                                  <label for="storyboard-pose-6">Wajah Penuh Busa</label>
+                              </div>
+                              <div class="pose-item">
+                                  <input type="checkbox" id="storyboard-pose-7" name="storyboard-pose" value="7">
+                                  <label for="storyboard-pose-7">Bahagia & Percaya Diri (After)</label>
+                              </div>
+                              <div class="pose-item">
+                                  <input type="checkbox" id="storyboard-pose-8" name="storyboard-pose" value="8">
+                                  <label for="storyboard-pose-8">Wajah Glowing & Produk (After)</label>
+                              </div>
+                              <div class="pose-item">
+                                  <input type="checkbox" id="storyboard-pose-9" name="storyboard-pose" value="9">
+                                  <label for="storyboard-pose-9">Bangga Memegang Produk (After)</label>
+                              </div>
+                          </div>
+                      </div>
+                      <!-- Image Storyboard Custom Scene Group -->
+                      <div id="image-storyboard-custom-group" class="form-group hidden">
+                          <label>Storyboard Scenes</label>
+                          <div id="image-storyboard-scenes-container" style="display: flex; flex-direction: column; gap: var(--space-sm); margin-top: var(--space-xs);">
+                              <!-- Scene slots will be added here by JS -->
+                          </div>
+                          <div style="margin-top: var(--space-sm);">
+                              <button id="add-image-scene-btn" class="btn-secondary" style="width: 100%;">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                  Add Scene
+                              </button>
+                          </div>
+                      </div>
+                      <div class="form-group">
+                          <label>Aspect Ratio</label>
+                          <div id="combine-aspect-ratio-selector" class="tabs-container">
+                             <button class="tab-button active" data-ratio="1:1">1:1</button>
+                             <button class="tab-button" data-ratio="9:16">9:16</button>
+                          </div>
+                      </div>
+                      <!-- Advanced Editing Section -->
+                      <div class="advanced-editing-section">
+                          <h3>Advanced Editing</h3>
+                          <div class="form-group">
+                              <label for="face-image-input">New Face</label>
+                              <div class="image-upload-group">
+                                  <div id="face-image-preview-container" class="image-upload-preview-container hidden">
+                                      <img id="face-image-preview" src="" alt="New face preview">
+                                      <button id="remove-face-image-button" class="image-upload-remove-button" aria-label="Remove new face image">&times;</button>
+                                  </div>
+                                  <label class="file-upload-label" for="face-image-input">
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                      <span id="face-file-name">Upload New Face</span>
+                                  </label>
+                              </div>
+                              <input type="file" id="face-image-input" accept="image/*" class="sr-only">
+                          </div>
+                          <div class="form-group">
+                              <label for="change-hair-input">Hair Style</label>
+                              <input type="text" id="change-hair-input" placeholder="e.g., long blonde hair">
+                          </div>
+                          <div class="form-group">
+                              <label for="change-clothes-input">Clothing Style</label>
+                              <input type="text" id="change-clothes-input" placeholder="e.g., a red t-shirt and blue jeans">
+                          </div>
+                      </div>
+                  </div>
+              </div>
+
+              <!-- Video Storyboard Panel -->
+              <div id="video-storyboard-panel" class="hidden">
+                  <p class="panel-description">Upload a sequence of images. AI will generate motion prompts and create a video for each scene.</p>
+                  <div id="storyboard-scenes-container" class="form-group">
+                      <!-- Scene upload slots will be added here by JS -->
+                  </div>
+                  <div class="form-group">
+                      <button id="add-scene-btn" class="btn-secondary" style="width: 100%;">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                          Add Scene
+                      </button>
+                  </div>
+                   <div class="form-group">
+                      <label>Aspect Ratio</label>
+                      <div id="video-storyboard-aspect-ratio-selector" class="tabs-container">
+                          <button class="tab-button active" data-ratio="1:1">1:1</button>
+                          <button class="tab-button" data-ratio="9:16">9:16</button>
+                      </div>
+                  </div>
+              </div>
+
+              <div class="generate-button-wrapper">
+                  <button id="generate-button" class="btn-primary">Generate</button>
+                  <p id="global-status"></p>
+              </div>
+            </aside>
+
+            <!-- RESULTS PANEL -->
+            <div class="results-panel">
+              <div class="results-header">
+                <h2>Generated Assets</h2>
+                <button id="download-all-button" class="btn-secondary hidden">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                  Download All
+                </button>
+              </div>
+              <div id="results-container">
+                <div class="placeholder">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5a9.5 9.5 0 0 1 9.5 9.5 9.5 9.5 0 0 1-9.5 9.5A9.5 9.5 0 0 1 2.5 12 9.5 9.5 0 0 1 12 2.5Z"></path><path d="M12 2.5v19"></path><path d="M2.5 12h19"></path><path d="m18 16-1.5-1.5a3 3 0 0 0-4 0l-1.5 1.5"></path><path d="m19 13-1.5-1.5a3 3 0 0 0-4 0l-1.5 1.5"></path><path d="m7 17-1-1a3 3 0 0 0-4 0l-1 1"></path><path d="m8 14-1-1a3 3 0 0 0-4 0l-1 1"></path></svg>
+                  <p>Your generated assets will appear here.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SUPPORT MODAL -->
+      <section id="support-section" class="hidden">
+        <div class="support-content">
+          <button id="close-support-btn" class="close-btn" aria-label="Close support modal">&times;</button>
+          <h2>Support & Community</h2>
+          <p class="subtitle">Join our community for updates, support, and to share your creations!</p>
+          <a href="https://www.tiktok.com/@dracobot.id" target="_blank" class="tiktok-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-2.43.03-4.83-.95-6.43-2.98-1.55-1.99-2.3-4.49-2.06-7.13.25-2.5 1.43-4.82 3.32-6.32 1.9-1.49 4.23-2.2 6.66-1.93.02 2.11-.01 4.22.02 6.33-.02 1.14-.43 2.25-1.11 3.12-1.04 1.3-2.9 1.97-4.52 1.39-.75-.27-1.3-.83-1.62-1.52-.36-.78-.49-1.66-.43-2.53.05-1.02.51-1.98 1.25-2.73.08-.08.15-.17.22-.25.01-.02.01-.06.02-.08.02-2.11-.01-4.22.02-6.33.02-.3-.01-.6-.01-.89A5.49 5.49 0 0 1 12.525.02z"></path></svg>
+            Follow on TikTok
+          </a>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="index.tsx"></script>
+  </body>
+</html>
